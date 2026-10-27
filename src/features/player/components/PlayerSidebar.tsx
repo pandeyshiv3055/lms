@@ -206,8 +206,8 @@ export const PlayerSidebar: React.FC<PlayerSidebarProps> = ({
                       backgroundColor: isCurrent
                         ? '#243E3D'
                         : isAccessible
-                        ? 'transparent'
-                        : 'rgba(255,255,255,0.02)',
+                          ? 'transparent'
+                          : 'rgba(255,255,255,0.02)',
                       borderLeft: isCurrent ? '3px solid #D49B65' : '3px solid transparent',
                       color: isCurrent ? '#FAF8F3' : isAccessible ? '#DDE5D7' : '#68716D',
                       textAlign: 'left',

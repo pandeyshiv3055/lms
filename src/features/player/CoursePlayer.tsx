@@ -16,6 +16,8 @@ import { BuildingInspectionActivity } from './room-inspection/BuildingInspection
 import { InteractiveVideoPlayer } from './interactive-video/InteractiveVideoPlayer';
 import { BranchingScenarioPlayer } from './branching-scenario/BranchingScenarioPlayer';
 import { AIRolePlayPlayer } from './role-play/AIRolePlayPlayer';
+import { interactiveService } from '../../services/interactive.service';
+import { scenarioService } from '../../services/scenario.service';
 import { AlertTriangle, Lock } from 'lucide-react';
 
 export const CoursePlayer: React.FC = () => {
@@ -99,10 +101,10 @@ export const CoursePlayer: React.FC = () => {
 
   const isSlideComplete = isCurrentSlideInspection
     ? isSlideAlreadySavedComplete ||
-      progressService.isRoomInspectionComplete(
-        userId,
-        currentSlide?.content.buildingScenarioId || 'scenario-facility-04'
-      )
+    progressService.isRoomInspectionComplete(
+      userId,
+      currentSlide?.content.buildingScenarioId || 'scenario-facility-04'
+    )
     : isSlideAlreadySavedComplete || slideCompletedLocally;
 
   // 2. Timer engine for timed slides
@@ -303,40 +305,61 @@ export const CoursePlayer: React.FC = () => {
           />
         );
 
-      case 'room-inspection':
+      case 'room-inspection': {
+        const lessonScenario = scenarioService.getScenarioForLesson(course.id, currentLesson.id);
+        const activeScenarioId =
+          lessonScenario?.id || currentSlide.content.buildingScenarioId || 'scenario-facility-04';
         return (
           <BuildingInspectionActivity
-            scenarioId={currentSlide.content.buildingScenarioId}
+            scenarioId={activeScenarioId}
             onActivityComplete={handleInteractionComplete}
           />
         );
+      }
 
-      case 'interactive-video':
+      case 'interactive-video': {
+        const config = interactiveService.getConfig(course.id, currentLesson.id);
+        const videoData =
+          config?.level1 ||
+          currentSlide.content.interactiveVideo ||
+          currentSlide.content.interactiveVideoData!;
         return (
           <InteractiveVideoPlayer
-            data={currentSlide.content.interactiveVideo || currentSlide.content.interactiveVideoData!}
+            data={videoData}
             onComplete={handleInteractionComplete}
           />
         );
+      }
 
-      case 'branching-scenario':
+      case 'branching-scenario': {
+        const config = interactiveService.getConfig(course.id, currentLesson.id);
+        const scenarioData =
+          config?.level2 ||
+          currentSlide.content.branchingScenario ||
+          currentSlide.content.branchingScenarioData!;
         return (
           <BranchingScenarioPlayer
-            data={currentSlide.content.branchingScenario || currentSlide.content.branchingScenarioData!}
+            data={scenarioData}
             onComplete={handleInteractionComplete}
           />
         );
+      }
 
-      case 'role-play':
+      case 'role-play': {
+        const config = interactiveService.getConfig(course.id, currentLesson.id);
+        const rolePlayScenario =
+          config?.level3 ||
+          currentSlide.content.rolePlayScenario;
         return (
           <AIRolePlayPlayer
-            scenario={currentSlide.content.rolePlayScenario}
+            scenario={rolePlayScenario}
             userId={userId}
             courseId={course.id}
             lessonId={currentLesson.id}
             onActivityComplete={handleInteractionComplete}
           />
         );
+      }
 
       case 'quiz-intro':
       case 'quiz-question':

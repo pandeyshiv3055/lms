@@ -102,7 +102,7 @@ export const InteractiveVideoPlayer: React.FC<InteractiveVideoPlayerProps> = ({
         }
       } else {
         if (wasPlayingBeforeTabHidden.current && !activeCheckpoint && videoRef.current) {
-          videoRef.current.play().catch(() => {});
+          videoRef.current.play().catch(() => { });
           setIsPlaying(true);
         }
       }
@@ -332,7 +332,7 @@ export const InteractiveVideoPlayer: React.FC<InteractiveVideoPlayerProps> = ({
     if (videoRef.current) {
       videoRef.current.play().then(() => {
         setIsPlaying(true);
-      }).catch(() => {});
+      }).catch(() => { });
     }
   };
 
@@ -350,7 +350,7 @@ export const InteractiveVideoPlayer: React.FC<InteractiveVideoPlayerProps> = ({
       videoRef.current.playbackRate = 1.0; // Enforce normal speed
       videoRef.current.play().then(() => {
         setIsPlaying(true);
-      }).catch(() => {});
+      }).catch(() => { });
     }
   };
 

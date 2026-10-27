@@ -1,4 +1,4 @@
-import { Course, Lesson, Slide, Module } from '../types';
+import { Course, Lesson, Slide, Module, LessonType } from '../types';
 import { storageService } from './storage.service';
 
 class CourseService {
@@ -166,6 +166,84 @@ class CourseService {
       }
     }
     return results;
+  }
+
+  // Lesson unit creation
+  public addLesson(
+    courseId: string,
+    lessonData: {
+      title: string;
+      description?: string;
+      type?: LessonType;
+      estimatedMinutes?: number;
+      moduleId?: string;
+    }
+  ): Lesson | null {
+    const course = this.getCourseById(courseId);
+    if (!course) {
+      throw new Error(`Course not found: ${courseId}`);
+    }
+
+    const trimmedTitle = lessonData.title?.trim();
+    if (!trimmedTitle) {
+      throw new Error('Lesson title is required.');
+    }
+
+    // Ensure course has at least one module
+    if (!course.modules || course.modules.length === 0) {
+      course.modules = [
+        {
+          id: `mod-${Date.now()}`,
+          title: 'Module 1: General Curriculum',
+          order: 1,
+          lessons: [],
+        },
+      ];
+    }
+
+    // Target designated module or default to first module
+    let targetModule = lessonData.moduleId
+      ? course.modules.find((m) => m.id === lessonData.moduleId)
+      : course.modules[0];
+
+    if (!targetModule) {
+      targetModule = course.modules[0];
+    }
+
+    const newLesson: Lesson = {
+      id: `lesson-${Date.now()}`,
+      title: trimmedTitle,
+      description: (lessonData.description || '').trim(),
+      type: lessonData.type || 'instructor',
+      estimatedMinutes: lessonData.estimatedMinutes || 20,
+      slides: [],
+      requiresAllSlides: true,
+    };
+
+    targetModule.lessons.push(newLesson);
+    this.saveCourse(course);
+    return newLesson;
+  }
+
+  public deleteLesson(courseId: string, lessonId: string): boolean {
+    const course = this.getCourseById(courseId);
+    if (!course) return false;
+
+    let removed = false;
+    for (const mod of course.modules) {
+      const initialLen = mod.lessons.length;
+      mod.lessons = mod.lessons.filter((l) => l.id !== lessonId);
+      if (mod.lessons.length !== initialLen) {
+        removed = true;
+        break;
+      }
+    }
+
+    if (removed) {
+      this.saveCourse(course);
+      return true;
+    }
+    return false;
   }
 
   // Slide Builder operations

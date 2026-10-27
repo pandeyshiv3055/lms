@@ -51,6 +51,7 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
 
   return (
     <footer
+      className="player-controls-footer"
       style={{
         height: 'var(--player-control-height)',
         backgroundColor: '#181E1F',
@@ -62,6 +63,7 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
         justifyContent: 'space-between',
         gap: '16px',
         zIndex: 20,
+        flexShrink: 0,
       }}
     >
       {/* Left: Audio Narration & Restart Control */}
@@ -97,6 +99,7 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
 
       {/* Center: Slide Timer & Completion Status Badge */}
       <div
+        className="player-controls-center"
         style={{
           display: 'flex',
           flexDirection: 'column',

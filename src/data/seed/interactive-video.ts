@@ -13,6 +13,7 @@ export const seedInteractiveVideo: InteractiveVideoData = {
   checkpoints: [
     {
       id: 'ckpt-1-unattended-item',
+      title: 'Unattended Item Recognition',
       timestampSeconds: 12,
       required: true,
       scoreWeight: 10,
@@ -42,6 +43,7 @@ export const seedInteractiveVideo: InteractiveVideoData = {
     },
     {
       id: 'ckpt-2-incident-report',
+      title: 'Incident Report Documentation',
       timestampSeconds: 24,
       required: true,
       scoreWeight: 10,

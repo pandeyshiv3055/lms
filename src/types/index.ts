@@ -196,6 +196,8 @@ export interface Room {
 
 export interface BuildingScenario {
   id: string;
+  courseId?: string;
+  lessonId?: string;
   title: string;
   description: string;
   buildingImage: string;
@@ -565,6 +567,21 @@ export interface RolePlayProgress {
   turnsCount?: number;
   turnsCompleted?: number;
   score?: number;
+}
+
+export type InteractiveConfigStatus = 'not-configured' | 'draft' | 'saved' | 'validated';
+
+export interface LessonInteractiveConfig {
+  id: string; // `${courseId}:${lessonId}`
+  courseId: string;
+  lessonId: string;
+  level1?: InteractiveVideoData | null;
+  level2?: BranchingScenarioData | null;
+  level3?: RolePlayScenario | null;
+  level1Status?: InteractiveConfigStatus;
+  level2Status?: InteractiveConfigStatus;
+  level3Status?: InteractiveConfigStatus;
+  updatedAt: string;
 }
 
 /* ==========================================================================

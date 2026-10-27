@@ -2,6 +2,8 @@ import { BuildingScenario } from '../../types';
 
 export const seedBuildingScenario: BuildingScenario = {
   id: 'scenario-facility-04',
+  courseId: 'course-nature-role',
+  lessonId: 'lesson-basic-duties',
   title: 'Basic Duties — Facility 04 Realistic Inspection Simulator',
   description:
     'Comprehensive active patrol simulation. Navigate through all key zones of AEGIS Facility 04, inspect realistic high-definition environments, detect unauthorized access or environmental hazards, and log formal incident reports.',
@@ -30,7 +32,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-reception-duffel-bag',
           label: 'Unattended Black Duffel Bag',
-          hotspot: { x: 32, y: 84, width: 16, height: 16, label: 'Unattended Duffel Bag' },
+          hotspot: { x: 31, y: 85, width: 13, height: 11, label: 'Unattended Duffel Bag' },
           objectType: 'hazard',
           isExpectedTarget: true,
           acceptedIncidentCategories: ['security', 'physical-security'],
@@ -45,7 +47,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-reception-desk',
           label: 'Visitor Check-in Reception Desk',
-          hotspot: { x: 80, y: 60, width: 24, height: 35, label: 'Reception Counter' },
+          hotspot: { x: 81, y: 68, width: 28, height: 36, label: 'Reception Counter' },
           objectType: 'furniture',
           isExpectedTarget: false,
           feedbackCorrect: '',
@@ -54,7 +56,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-reception-turnstiles',
           label: 'Security Speedlanes & Turnstiles',
-          hotspot: { x: 47, y: 52, width: 14, height: 20, label: 'Access Turnstiles' },
+          hotspot: { x: 48, y: 53, width: 13, height: 15, label: 'Access Turnstiles' },
           objectType: 'access',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'Turnstiles and optical speed gates are operational with security staff monitoring entry.',
@@ -62,7 +64,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-reception-coffeetable',
           label: 'Visitor Coffee Table & Magazines',
-          hotspot: { x: 10, y: 84, width: 18, height: 18, label: 'Lounge Table' },
+          hotspot: { x: 10.5, y: 84, width: 14, height: 13, label: 'Lounge Table' },
           objectType: 'furniture',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'The lounge seating and table are compliant.',
@@ -74,7 +76,7 @@ export const seedBuildingScenario: BuildingScenario = {
           name: 'Unattended Suspicious Baggage',
           description: 'Black tactical duffel bag left unattended beside visitor seating without an owner in sight.',
           category: 'security',
-          hotspot: { x: 32, y: 84, width: 16, height: 16 },
+          hotspot: { x: 31, y: 85, width: 13, height: 11 },
           feedbackCorrect:
             'Unattended baggage identified! Standard operating procedure requires verifying ownership, establishing a 15-meter cordon, and notifying the Duty Sergeant.',
           feedbackWhyItMatters:
@@ -103,7 +105,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-server-open-rack',
           label: 'Open Server Rack 19 & Dangling Cables',
-          hotspot: { x: 72, y: 50, width: 28, height: 65, label: 'Rack 19 Open Cabinet' },
+          hotspot: { x: 71.5, y: 49, width: 17, height: 62, label: 'Rack 19 Open Cabinet' },
           objectType: 'equipment',
           isExpectedTarget: true,
           acceptedIncidentCategories: ['security', 'compliance', 'equipment', 'physical-security'],
@@ -118,7 +120,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-server-biometric-reader',
           label: 'Biometric Access Wall Reader',
-          hotspot: { x: 4, y: 52, width: 6, height: 12, label: 'Biometric Reader' },
+          hotspot: { x: 3.8, y: 52, width: 4.5, height: 10, label: 'Biometric Reader' },
           objectType: 'access',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'The wall access control reader is functional and actively securing the perimeter.',
@@ -126,7 +128,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-server-cable-tray',
           label: 'Overhead Cable Management Tray',
-          hotspot: { x: 35, y: 15, width: 34, height: 16, label: 'Cable Trays' },
+          hotspot: { x: 34, y: 13, width: 28, height: 13, label: 'Cable Trays' },
           objectType: 'equipment',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'Overhead cable trays are neatly bundled and compliant with structured wiring standards.',
@@ -134,7 +136,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-server-locked-racks',
           label: 'Secured Background Server Cabinets',
-          hotspot: { x: 42, y: 52, width: 18, height: 46, label: 'Locked Cabinets' },
+          hotspot: { x: 42, y: 50, width: 16, height: 44, label: 'Locked Cabinets' },
           objectType: 'equipment',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'These adjacent server racks are properly locked with normal blue operational LEDs.',
@@ -146,7 +148,7 @@ export const seedBuildingScenario: BuildingScenario = {
           name: 'Unsecured Server Cabinet & Exposed Wiring',
           description: 'Server Rack 19 door left wide open with critical LED alert and dangling patch cables.',
           category: 'security',
-          hotspot: { x: 72, y: 50, width: 28, height: 65 },
+          hotspot: { x: 71.5, y: 49, width: 17, height: 62 },
           feedbackCorrect:
             'Physical server compromise prevented! Server cabinet must be locked with physical keycard logging and IT Infrastructure alerted.',
           feedbackWhyItMatters:
@@ -175,7 +177,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-meeting-laptop',
           label: 'Unattended Corporate Laptop',
-          hotspot: { x: 70, y: 66, width: 18, height: 18, label: 'Unattended Laptop' },
+          hotspot: { x: 67, y: 65, width: 16, height: 16, label: 'Unattended Laptop' },
           objectType: 'equipment',
           isExpectedTarget: true,
           acceptedIncidentCategories: ['security', 'compliance', 'information-security'],
@@ -190,7 +192,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-meeting-badge',
           label: 'Exposed VIP Security Badge & Lanyard',
-          hotspot: { x: 53, y: 77, width: 12, height: 12, label: 'VIP Security Badge' },
+          hotspot: { x: 51.5, y: 77, width: 9, height: 9, label: 'VIP Security Badge' },
           objectType: 'access',
           isExpectedTarget: true,
           acceptedIncidentCategories: ['security', 'compliance', 'physical-security'],
@@ -205,7 +207,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-meeting-screen',
           label: 'Wall Presentation Display Screen',
-          hotspot: { x: 29, y: 28, width: 23, height: 26, label: 'Presentation Display' },
+          hotspot: { x: 29, y: 28.5, width: 19, height: 20, label: 'Presentation Display' },
           objectType: 'equipment',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'The presentation screen is securely mounted on the conference room wall.',
@@ -213,7 +215,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-meeting-pitcher',
           label: 'Water Pitcher & Glassware',
-          hotspot: { x: 44, y: 50, width: 10, height: 12, label: 'Meeting Beverage Service' },
+          hotspot: { x: 44.5, y: 49, width: 7, height: 8.5, label: 'Meeting Beverage Service' },
           objectType: 'furniture',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'Standard hospitality glassware poses no security hazard.',
@@ -221,7 +223,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-meeting-chairs',
           label: 'Executive Boardroom Chairs',
-          hotspot: { x: 19, y: 72, width: 16, height: 28, label: 'Boardroom Seating' },
+          hotspot: { x: 18, y: 72, width: 15, height: 25, label: 'Boardroom Seating' },
           objectType: 'furniture',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'Conference seating is neatly arranged and compliant.',
@@ -233,7 +235,7 @@ export const seedBuildingScenario: BuildingScenario = {
           name: 'Unattended Open Laptop & VIP Access Badge',
           description: 'Active corporate laptop and Level-3 security ID lanyard left unattended on the conference table.',
           category: 'security',
-          hotspot: { x: 70, y: 66, width: 18, height: 18 },
+          hotspot: { x: 67, y: 65, width: 16, height: 16 },
           feedbackCorrect:
             'Information security breach logged! Clean Desk Policy requires locking unattended workstations and securing all physical credential badges.',
           feedbackWhyItMatters:
@@ -262,7 +264,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-soc-videowall',
           label: 'CCTV Video Monitor Wall',
-          hotspot: { x: 55, y: 25, width: 48, height: 38, label: 'CCTV Surveillance Wall' },
+          hotspot: { x: 64, y: 24, width: 56, height: 38, label: 'CCTV Surveillance Wall' },
           objectType: 'equipment',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'All CCTV cameras are online with green status indicators displaying "SYSTEMS OK".',
@@ -270,7 +272,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-soc-workstation',
           label: 'Attended Operator Workstation',
-          hotspot: { x: 48, y: 65, width: 26, height: 30, label: 'Operator Console' },
+          hotspot: { x: 46, y: 64, width: 24, height: 26, label: 'Operator Console' },
           objectType: 'equipment',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'The console is properly attended by a certified security operator in uniform.',
@@ -278,7 +280,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-soc-radios',
           label: 'Two-Way Radio Charging Dock',
-          hotspot: { x: 74, y: 80, width: 16, height: 18, label: 'Radio Charger Dock' },
+          hotspot: { x: 74, y: 79, width: 13, height: 14, label: 'Radio Charger Dock' },
           objectType: 'equipment',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'Two-way radios are fully docked with green charge status lights.',
@@ -286,7 +288,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-soc-lockbox',
           label: 'Secured Key Lockbox',
-          hotspot: { x: 91, y: 72, width: 10, height: 22, label: 'Key Safe Lockbox' },
+          hotspot: { x: 91, y: 73, width: 7.5, height: 16, label: 'Key Safe Lockbox' },
           objectType: 'access',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'The master key cabinet is securely locked with key integrity maintained.',
@@ -314,7 +316,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-storage-spill',
           label: 'Unmarked Liquid Spill on Walkway',
-          hotspot: { x: 50, y: 75, width: 32, height: 16, label: 'Liquid Spill Hazard' },
+          hotspot: { x: 50, y: 75, width: 25, height: 11, label: 'Liquid Spill Hazard' },
           objectType: 'hazard',
           isExpectedTarget: true,
           acceptedIncidentCategories: ['safety', 'maintenance', 'hazard'],
@@ -329,7 +331,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-storage-shelving',
           label: 'Warehouse Pallet Racks',
-          hotspot: { x: 18, y: 45, width: 28, height: 60, label: 'Storage Racking' },
+          hotspot: { x: 17, y: 43, width: 24, height: 56, label: 'Storage Racking' },
           objectType: 'furniture',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'Pallet racking is structurally sound and inventory is stacked within height limits.',
@@ -337,7 +339,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-storage-palletjack',
           label: 'Manual Pallet Jack',
-          hotspot: { x: 57, y: 55, width: 10, height: 12, label: 'Pallet Jack' },
+          hotspot: { x: 57, y: 54, width: 8.5, height: 10, label: 'Pallet Jack' },
           objectType: 'equipment',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'Material handling equipment is in active operation by an authorized warehouse worker.',
@@ -345,7 +347,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-storage-extinguisher',
           label: 'Column-Mounted Fire Extinguisher',
-          hotspot: { x: 82, y: 47, width: 5, height: 10, label: 'Fire Extinguisher' },
+          hotspot: { x: 82.5, y: 47, width: 3.5, height: 8.5, label: 'Fire Extinguisher' },
           objectType: 'safety',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'Fire extinguisher inspection tag is up to date and clearance is maintained.',
@@ -357,7 +359,7 @@ export const seedBuildingScenario: BuildingScenario = {
           name: 'Unmarked Chemical / Liquid Spill on Walkway',
           description: 'Slick liquid pool covering the yellow safety walkway with no wet floor warning cone.',
           category: 'safety',
-          hotspot: { x: 50, y: 75, width: 32, height: 16 },
+          hotspot: { x: 50, y: 75, width: 25, height: 11 },
           feedbackCorrect:
             'Occupational hazard reported! Standard protocol mandates deploying high-visibility caution cones, cordoning the slip zone, and summoning Facilities Spill Response.',
           feedbackWhyItMatters:
@@ -386,7 +388,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-corridor-crates',
           label: 'Heavy Crates Blocking Fire Exit',
-          hotspot: { x: 44, y: 65, width: 28, height: 48, label: 'Obstructing Crates' },
+          hotspot: { x: 47, y: 65, width: 22, height: 43, label: 'Obstructing Crates' },
           objectType: 'hazard',
           isExpectedTarget: true,
           acceptedIncidentCategories: ['safety', 'compliance', 'egress'],
@@ -401,7 +403,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-corridor-extinguisher',
           label: 'Wall Fire Extinguisher & Sign',
-          hotspot: { x: 89, y: 62, width: 10, height: 28, label: 'Fire Extinguisher Station' },
+          hotspot: { x: 90, y: 62, width: 8, height: 25, label: 'Fire Extinguisher Station' },
           objectType: 'safety',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'Fire extinguisher is securely mounted and easily accessible.',
@@ -409,7 +411,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-corridor-exitsign',
           label: 'Illuminated Green EXIT Sign',
-          hotspot: { x: 62, y: 8, width: 14, height: 12, label: 'Emergency Exit Sign' },
+          hotspot: { x: 62.5, y: 8.5, width: 8.5, height: 6.5, label: 'Emergency Exit Sign' },
           objectType: 'safety',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'The overhead emergency exit sign is illuminated and visible.',
@@ -417,7 +419,7 @@ export const seedBuildingScenario: BuildingScenario = {
         {
           id: 'obj-corridor-stairs',
           label: 'Stairwell Walkway & Handrail',
-          hotspot: { x: 14, y: 38, width: 18, height: 40, label: 'Stairwell Egress' },
+          hotspot: { x: 13.5, y: 38, width: 15, height: 36, label: 'Stairwell Egress' },
           objectType: 'access',
           isExpectedTarget: false,
           feedbackWhyItMatters: 'The stairway and handrail are clear of debris.',
@@ -429,7 +431,7 @@ export const seedBuildingScenario: BuildingScenario = {
           name: 'Obstructed Fire Exit Doorway',
           description: 'Heavy wooden crates stacked directly against the emergency egress push bar.',
           category: 'safety',
-          hotspot: { x: 44, y: 65, width: 28, height: 48 },
+          hotspot: { x: 47, y: 65, width: 22, height: 43 },
           feedbackCorrect:
             'Critical egress obstruction flagged! Fire safety codes strictly forbid placing any object within 36 inches of an emergency exit.',
           feedbackWhyItMatters:

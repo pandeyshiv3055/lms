@@ -2,6 +2,7 @@ import React from 'react';
 
 interface RoomSceneProps {
   roomId: string;
+  imageSrc?: string;
   className?: string;
   highlightedIrregularityId?: string | null;
   reportedIrregularityIds?: string[];
@@ -36,12 +37,15 @@ const ROOM_IMAGE_MAP: Record<string, { src: string; alt: string }> = {
 
 export const RoomScene: React.FC<RoomSceneProps> = ({
   roomId,
+  imageSrc,
   className = '',
 }) => {
-  const roomData = ROOM_IMAGE_MAP[roomId] || {
+  const fallback = ROOM_IMAGE_MAP[roomId] || {
     src: '/assets/facility-inspection/rooms/conference-room.jpg',
     alt: 'Inspection Room Scene',
   };
+  const activeSrc = imageSrc || fallback.src;
+  const activeAlt = fallback.alt;
 
   return (
     <div
@@ -58,8 +62,8 @@ export const RoomScene: React.FC<RoomSceneProps> = ({
       }}
     >
       <img
-        src={roomData.src}
-        alt={roomData.alt}
+        src={activeSrc}
+        alt={activeAlt}
         style={{
           width: '100%',
           height: '100%',

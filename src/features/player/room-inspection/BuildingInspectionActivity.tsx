@@ -27,6 +27,7 @@ import {
 import { scenarioService } from '../../../services/scenario.service';
 import { progressService } from '../../../services/progress.service';
 import { authService } from '../../../services/auth.service';
+import { InspectionHotspotLayer } from './InspectionHotspotLayer';
 
 interface BuildingInspectionActivityProps {
   scenarioId?: string;
@@ -679,10 +680,10 @@ export const BuildingInspectionActivity: React.FC<BuildingInspectionActivityProp
                     backgroundColor: isCompleted
                       ? '#387A5A'
                       : isFailed
-                      ? '#B44D45'
-                      : isInProgress
-                      ? '#B87955'
-                      : '#173B3A',
+                        ? '#B44D45'
+                        : isInProgress
+                          ? '#B87955'
+                          : '#173B3A',
                     border: '2.5px solid #FAF8F3',
                     display: 'flex',
                     alignItems: 'center',
@@ -770,23 +771,29 @@ export const BuildingInspectionActivity: React.FC<BuildingInspectionActivityProp
     return (
       <div
         style={{
-          padding: '14px 20px',
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
+          overflow: 'hidden',
+          backgroundColor: '#FAF8F3',
         }}
         className="animate-fade-in"
       >
-        {/* Room Header & Navigation Bar */}
+        {/* Pinned Room Header & Navigation Bar */}
         <div
           style={{
+            padding: '12px 20px',
+            backgroundColor: '#FFFFFF',
+            borderBottom: '1.5px solid #E5E0D5',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginBottom: '8px',
             flexWrap: 'wrap',
-            gap: '8px',
+            gap: '10px',
+            flexShrink: 0,
+            zIndex: 30,
+            boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -794,7 +801,7 @@ export const BuildingInspectionActivity: React.FC<BuildingInspectionActivityProp
               onClick={handleReturnToBuilding}
               className="btn btn-secondary btn-sm"
               style={{
-                padding: '6px 12px',
+                padding: '6px 14px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
@@ -831,465 +838,560 @@ export const BuildingInspectionActivity: React.FC<BuildingInspectionActivityProp
           </div>
         </div>
 
-        {/* Photographic Room Stage with Responsive Hotspot Layer */}
+        {/* Inspection Console: Full Photo Stage (Left) & Operational Control Panel (Right) */}
         <div
           style={{
             flex: 1,
-            position: 'relative',
-            borderRadius: '10px',
+            minHeight: 0,
+            padding: '14px 18px',
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1.8fr) minmax(310px, 1fr)',
+            gap: '16px',
             overflow: 'hidden',
-            border: '2px solid #2E3839',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
-            backgroundColor: '#0F1314',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '340px',
           }}
         >
-          {/* High-Definition Photographic Scene */}
-          <img
-            src={selectedRoom.roomImage}
-            alt={selectedRoom.name}
+          {/* Left Column: Photographic Room Stage - 100% visible on screen without any scrolling */}
+          <div
             style={{
+              position: 'relative',
               width: '100%',
               height: '100%',
-              objectFit: 'contain',
-              display: 'block',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#0F1314',
+              borderRadius: '10px',
+              border: '2px solid #2E3839',
+              boxShadow: '0 6px 20px rgba(0,0,0,0.22)',
+              overflow: 'hidden',
             }}
-          />
-
-          {/* Instruction overlay when selecting objects */}
-          {roomStep === 'select_object' && (
+          >
+            {/* 16:9 Inner Photographic Canvas: Mathematically guaranteed to fit 100% within available viewport */}
             <div
               style={{
-                position: 'absolute',
-                top: '12px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                backgroundColor: 'rgba(23, 59, 58, 0.95)',
-                border: '1.5px solid #D49B65',
-                borderRadius: '8px',
-                padding: '6px 16px',
-                color: '#FAF8F3',
-                fontSize: '12px',
-                fontWeight: 700,
-                zIndex: 40,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+                position: 'relative',
+                maxWidth: '100%',
+                maxHeight: '100%',
+                aspectRatio: '16 / 9',
+                width: '100%',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
+                justifyContent: 'center',
               }}
             >
-              <Eye size={15} color="#D49B65" />
-              <span>Select the object or area you believe contains the irregularity:</span>
-            </div>
-          )}
-
-          {/* Object Hotspots (Enabled during select_object or feedback) */}
-          {selectedRoom.objects.map((obj) => {
-            const isSelected = activeSelectedObjectId === obj.id;
-            const { x, y, width = 14, height = 14 } = obj.hotspot;
-            const canInteract = roomStep === 'select_object';
-
-            return (
-              <div
-                key={obj.id}
-                onClick={() => canInteract && handleSelectObject(obj)}
-                tabIndex={canInteract ? 0 : -1}
-                role="button"
-                aria-label={`Inspect ${obj.label}`}
-                title={obj.label}
-                onKeyDown={(e) => {
-                  if (canInteract && (e.key === 'Enter' || e.key === ' ')) {
-                    handleSelectObject(obj);
-                  }
-                }}
+              {/* High-Definition Photographic Scene */}
+              <img
+                src={selectedRoom.roomImage}
+                alt={selectedRoom.name}
                 style={{
-                  position: 'absolute',
-                  left: `${x}%`,
-                  top: `${y}%`,
-                  width: `${width}%`,
-                  height: `${height}%`,
-                  transform: 'translate(-50%, -50%)',
-                  cursor: canInteract ? 'pointer' : 'default',
-                  zIndex: 30,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: '6px',
-                  border: isSelected
-                    ? '3px solid #D49B65'
-                    : canInteract
-                    ? '2px dashed rgba(250, 248, 243, 0.55)'
-                    : 'none',
-                  backgroundColor: isSelected
-                    ? 'rgba(212, 155, 101, 0.25)'
-                    : 'transparent',
-                  boxShadow: isSelected
-                    ? '0 0 16px rgba(212, 155, 101, 0.8)'
-                    : 'none',
-                  transition: 'all 0.15s ease',
-                  outline: 'none',
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  display: 'block',
                 }}
-              >
-                {/* Visual Label or Selection Indicator */}
-                {isSelected && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      bottom: '-28px',
-                      backgroundColor: 'rgba(23, 59, 58, 0.95)',
-                      border: '1px solid #D49B65',
-                      borderRadius: '4px',
-                      padding: '3px 8px',
-                      color: '#FAF8F3',
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      whiteSpace: 'nowrap',
-                      pointerEvents: 'none',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-                    }}
-                  >
-                    Selected: {obj.label}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+              />
 
-        {/* Bottom Interaction Panel (Strict Sequence) */}
-        <div
-          style={{
-            marginTop: '10px',
-            backgroundColor: '#FFFFFF',
-            border: '1.5px solid #E5E0D5',
-            borderRadius: '10px',
-            padding: '14px 20px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
-          }}
-        >
-          {/* STEP A: Yes / No Observation Question */}
-          {roomStep === 'inspect_prompt' && (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '14px',
-              }}
-            >
-              <div>
-                <span className="badge badge-copper" style={{ marginBottom: '4px' }}>
-                  Step 1: Observation Assessment
-                </span>
-                <h3 style={{ fontSize: '15.5px', color: '#173B3A', margin: 0 }}>
-                  {selectedRoom.promptQuestion}
-                </h3>
-                <p style={{ margin: '3px 0 0', fontSize: '12px', color: '#68716D' }}>
-                  Inspect the physical room photograph and indicate your operational finding.
-                </p>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {/* Radio Button Options */}
-                <button
-                  onClick={() => setSelectedYesNo(true)}
+              {/* Instruction overlay when selecting objects */}
+              {roomStep === 'select_object' && (
+                <div
                   style={{
-                    padding: '8px 18px',
-                    borderRadius: '6px',
-                    border: selectedYesNo === true ? '2px solid #B87955' : '1.5px solid #CBD5D1',
-                    backgroundColor: selectedYesNo === true ? '#F7EFEA' : '#FFFFFF',
-                    color: selectedYesNo === true ? '#B87955' : '#242C2D',
+                    position: 'absolute',
+                    top: '10px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    backgroundColor: 'rgba(23, 59, 58, 0.95)',
+                    border: '1.5px solid #D49B65',
+                    borderRadius: '8px',
+                    padding: '5px 14px',
+                    color: '#FAF8F3',
+                    fontSize: '11.5px',
                     fontWeight: 700,
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  Yes — Irregularity Observed
-                </button>
-
-                <button
-                  onClick={() => setSelectedYesNo(false)}
-                  style={{
-                    padding: '8px 18px',
-                    borderRadius: '6px',
-                    border: selectedYesNo === false ? '2px solid #173B3A' : '1.5px solid #CBD5D1',
-                    backgroundColor: selectedYesNo === false ? '#EAF3EE' : '#FFFFFF',
-                    color: selectedYesNo === false ? '#173B3A' : '#242C2D',
-                    fontWeight: 700,
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  No — Room Compliant
-                </button>
-
-                {/* Submit Observation (Disabled until choice made!) */}
-                <button
-                  onClick={handleSubmitYesNo}
-                  disabled={selectedYesNo === null}
-                  className="btn btn-primary btn-sm"
-                  style={{
-                    padding: '9px 20px',
-                    fontWeight: 700,
-                    opacity: selectedYesNo !== null ? 1 : 0.5,
-                    cursor: selectedYesNo !== null ? 'pointer' : 'not-allowed',
-                  }}
-                >
-                  <span>Submit Observation</span>
-                  <ChevronRight size={14} />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* STEP B: Identify Faulty Object */}
-          {roomStep === 'select_object' && (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '12px',
-              }}
-            >
-              <div>
-                <span className="badge badge-copper" style={{ marginBottom: '4px' }}>
-                  Step 2: Object-Level Identification
-                </span>
-                <div style={{ fontSize: '14.5px', fontWeight: 700, color: '#173B3A' }}>
-                  {activeSelectedObjectId && selectedObj ? (
-                    <span>
-                      Target Selected: <strong style={{ color: '#B87955' }}>{selectedObj.label}</strong>
-                    </span>
-                  ) : (
-                    <span>Click on the physical object or area in the photograph above to select it</span>
-                  )}
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button
-                  onClick={() => setRoomStep('inspect_prompt')}
-                  className="btn btn-secondary btn-sm"
-                >
-                  <span>Change Yes/No Answer</span>
-                </button>
-
-                <button
-                  onClick={handleProceedToReport}
-                  disabled={!activeSelectedObjectId}
-                  className="btn btn-accent btn-sm"
-                  style={{
-                    padding: '8px 20px',
-                    fontWeight: 700,
-                    opacity: activeSelectedObjectId ? 1 : 0.45,
-                    cursor: activeSelectedObjectId ? 'pointer' : 'not-allowed',
+                    zIndex: 40,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
+                    whiteSpace: 'nowrap',
                   }}
                 >
-                  <FileText size={15} />
-                  <span>File Incident Report</span>
-                </button>
-              </div>
-            </div>
-          )}
+                  <Eye size={14} color="#D49B65" />
+                  <span>Click object or area in scene to designate target</span>
+                </div>
+              )}
 
-          {/* STEP C: Incident Reporting Form */}
-          {roomStep === 'file_report' && (
-            <div className="animate-fade-in">
+              {/* Reusable Hotspot Layer: Hover-to-reveal and Persistent Selection/Report States */}
+              <InspectionHotspotLayer
+                objects={selectedRoom.objects}
+                activeSelectedObjectId={activeSelectedObjectId}
+                reportedObjectId={
+                  roomStep === 'feedback' || isRoomFinished
+                    ? roomStates[selectedRoom.id]?.selectedObjectId ||
+                      submittedReports[selectedRoom.id]?.objectId ||
+                      activeSelectedObjectId
+                    : undefined
+                }
+                isReportCorrect={
+                  roomStep === 'feedback'
+                    ? activeFeedback?.isCorrect
+                    : roomStates[selectedRoom.id]?.isCorrect
+                }
+                canSelect={roomStep === 'select_object'}
+                onSelectObject={handleSelectObject}
+                allowHover={roomStep === 'select_object'}
+              />
+            </div>
+          </div>
+
+          {/* Right Column: Step-by-Step Operational Action Panel */}
+          <div
+            className="custom-scrollbar"
+            style={{
+              height: '100%',
+              minHeight: 0,
+              overflowY: 'auto',
+              backgroundColor: '#FFFFFF',
+              border: '1.5px solid #E5E0D5',
+              borderRadius: '10px',
+              padding: '18px 20px',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.06)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}
+          >
+            {/* STEP A: Yes / No Observation Question */}
+            {roomStep === 'inspect_prompt' && (
               <div
+                className="animate-fade-in"
                 style={{
                   display: 'flex',
-                  alignItems: 'center',
+                  flexDirection: 'column',
+                  height: '100%',
                   justifyContent: 'space-between',
-                  marginBottom: '10px',
-                  borderBottom: '1px solid #E5E0D5',
-                  paddingBottom: '8px',
+                  gap: '14px',
                 }}
               >
                 <div>
-                  <span className="badge badge-copper" style={{ marginBottom: '2px' }}>
-                    Step 3: Official Incident Report
+                  <span className="badge badge-copper" style={{ marginBottom: '8px', display: 'inline-block' }}>
+                    Step 1: Observation Assessment
                   </span>
-                  <div style={{ fontWeight: 800, fontSize: '15px', color: '#173B3A' }}>
-                    Filing Log for: {selectedRoom.name} — {selectedObj?.label}
+                  <h3 style={{ fontSize: '15.5px', color: '#173B3A', margin: '0 0 6px', fontWeight: 800 }}>
+                    {selectedRoom.promptQuestion}
+                  </h3>
+                  <p style={{ margin: 0, fontSize: '12px', color: '#68716D', lineHeight: 1.45 }}>
+                    Inspect the physical room photograph on the left and indicate your operational finding.
+                  </p>
+
+                  {/* Radio Button Options: Single Consistent Selection Color */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px' }}>
+                    <button
+                      onClick={() => setSelectedYesNo(true)}
+                      type="button"
+                      style={{
+                        padding: '11px 14px',
+                        borderRadius: '8px',
+                        border: selectedYesNo === true ? '2px solid #173B3A' : '1.5px solid #CBD5D1',
+                        backgroundColor: selectedYesNo === true ? '#EAF3EE' : '#FAF8F3',
+                        color: selectedYesNo === true ? '#173B3A' : '#242C2D',
+                        fontWeight: 700,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          borderRadius: '50%',
+                          border: selectedYesNo === true ? '5px solid #173B3A' : '2px solid #CBD5D1',
+                          backgroundColor: '#FFFFFF',
+                          flexShrink: 0,
+                        }}
+                      />
+                      <span>Yes — Irregularity Observed</span>
+                    </button>
+
+                    <button
+                      onClick={() => setSelectedYesNo(false)}
+                      type="button"
+                      style={{
+                        padding: '11px 14px',
+                        borderRadius: '8px',
+                        border: selectedYesNo === false ? '2px solid #173B3A' : '1.5px solid #CBD5D1',
+                        backgroundColor: selectedYesNo === false ? '#EAF3EE' : '#FAF8F3',
+                        color: selectedYesNo === false ? '#173B3A' : '#242C2D',
+                        fontWeight: 700,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          borderRadius: '50%',
+                          border: selectedYesNo === false ? '5px solid #173B3A' : '2px solid #CBD5D1',
+                          backgroundColor: '#FFFFFF',
+                          flexShrink: 0,
+                        }}
+                      />
+                      <span>No — Room Compliant</span>
+                    </button>
                   </div>
                 </div>
 
-                <button
-                  onClick={() => setRoomStep('select_object')}
-                  className="btn btn-secondary btn-sm"
-                  style={{ fontSize: '12px' }}
-                >
-                  Cancel / Select Different Object
-                </button>
-              </div>
-
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                  gap: '12px',
-                  marginBottom: '10px',
-                }}
-              >
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '11.5px',
-                      fontWeight: 700,
-                      color: '#242C2D',
-                      marginBottom: '4px',
-                    }}
-                  >
-                    Incident Category
-                  </label>
-                  <select
-                    value={activeCategory}
-                    onChange={(e) => setActiveCategory(e.target.value)}
+                {/* Submit Observation (Disabled until choice made!) */}
+                <div style={{ paddingTop: '10px', borderTop: '1px solid #E5E0D5' }}>
+                  <button
+                    onClick={handleSubmitYesNo}
+                    disabled={selectedYesNo === null}
+                    className="btn btn-primary"
                     style={{
                       width: '100%',
-                      padding: '7px 10px',
-                      borderRadius: '6px',
-                      border: '1.5px solid #CBD5D1',
-                      fontSize: '12.5px',
-                      backgroundColor: '#FFFFFF',
-                      color: '#173B3A',
-                      fontWeight: 600,
-                    }}
-                  >
-                    <option value="physical-security">Physical Security & Unauthorized Access</option>
-                    <option value="information-security">Information Security & Clean Desk</option>
-                    <option value="safety">Occupational Safety & Walkway Hazards</option>
-                    <option value="egress">Life Safety & Egress Obstruction</option>
-                    <option value="compliance">Regulatory Compliance / Equipment Fault</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '11.5px',
+                      padding: '10px 16px',
                       fontWeight: 700,
-                      color: '#242C2D',
-                      marginBottom: '4px',
+                      opacity: selectedYesNo !== null ? 1 : 0.45,
+                      cursor: selectedYesNo !== null ? 'pointer' : 'not-allowed',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
                     }}
                   >
-                    Severity Classification
-                  </label>
-                  <select
-                    value={activeSeverity}
-                    onChange={(e) =>
-                      setActiveSeverity(e.target.value as 'low' | 'medium' | 'high' | 'critical')
-                    }
-                    style={{
-                      width: '100%',
-                      padding: '7px 10px',
-                      borderRadius: '6px',
-                      border: '1.5px solid #CBD5D1',
-                      fontSize: '12.5px',
-                      backgroundColor: '#FFFFFF',
-                      color: '#173B3A',
-                      fontWeight: 600,
-                    }}
-                  >
-                    <option value="critical">Critical (Immediate life safety / breach)</option>
-                    <option value="high">High (Major protocol violation)</option>
-                    <option value="medium">Medium (Hazard requiring prompt action)</option>
-                    <option value="low">Low (Routine maintenance)</option>
-                  </select>
+                    <span>Submit Observation</span>
+                    <ChevronRight size={15} />
+                  </button>
                 </div>
               </div>
+            )}
 
-              <div style={{ marginBottom: '12px' }}>
-                <label
-                  style={{
-                    display: 'block',
-                    fontSize: '11.5px',
-                    fontWeight: 700,
-                    color: '#242C2D',
-                    marginBottom: '4px',
-                  }}
-                >
-                  Officer Observation Notes
-                </label>
-                <input
-                  type="text"
-                  value={activeDescription}
-                  onChange={(e) => setActiveDescription(e.target.value)}
-                  placeholder="Enter brief description of observed condition..."
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    border: '1.5px solid #CBD5D1',
-                    fontSize: '12.5px',
-                    backgroundColor: '#FAF8F3',
-                  }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                <button
-                  onClick={handleSubmitReport}
-                  className="btn btn-primary btn-sm"
-                  style={{ padding: '8px 24px', fontWeight: 700 }}
-                >
-                  <CheckCircle2 size={15} />
-                  <span>Submit Incident Report</span>
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* STEP D: Feedback & Resolution */}
-          {roomStep === 'feedback' && activeFeedback && (
-            <div className="animate-fade-in">
+            {/* STEP B: Identify Faulty Object */}
+            {roomStep === 'select_object' && (
               <div
+                className="animate-fade-in"
                 style={{
                   display: 'flex',
-                  alignItems: 'center',
+                  flexDirection: 'column',
+                  height: '100%',
                   justifyContent: 'space-between',
-                  marginBottom: '8px',
-                  flexWrap: 'wrap',
-                  gap: '8px',
+                  gap: '14px',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {activeFeedback.isCorrect ? (
-                    <>
-                      <CheckCircle2 size={20} color="#387A5A" />
-                      <span style={{ fontWeight: 800, color: '#387A5A', fontSize: '15px' }}>
-                        {activeFeedback.title}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <XCircle size={20} color="#B44D45" />
-                      <span style={{ fontWeight: 800, color: '#B44D45', fontSize: '15px' }}>
-                        {activeFeedback.title}
-                      </span>
-                    </>
+                <div>
+                  <span className="badge badge-copper" style={{ marginBottom: '8px', display: 'inline-block' }}>
+                    Step 2: Object-Level Identification
+                  </span>
+                  <h3 style={{ fontSize: '15.5px', color: '#173B3A', margin: '0 0 6px', fontWeight: 800 }}>
+                    Locate Irregularity
+                  </h3>
+                  <p style={{ margin: 0, fontSize: '12px', color: '#68716D', lineHeight: 1.45 }}>
+                    Click on the physical object or hazard in the photograph on the left to designate it.
+                  </p>
+
+                  <div
+                    style={{
+                      marginTop: '16px',
+                      padding: '12px 14px',
+                      borderRadius: '8px',
+                      backgroundColor: activeSelectedObjectId && selectedObj ? '#F7EFEA' : '#FAF8F3',
+                      border: activeSelectedObjectId && selectedObj ? '1.5px solid #D49B65' : '1.5px dashed #CBD5D1',
+                    }}
+                  >
+                    <div style={{ fontSize: '11.5px', color: '#68716D', fontWeight: 600, marginBottom: '4px' }}>
+                      Identified Hazard Target:
+                    </div>
+                    {activeSelectedObjectId && selectedObj ? (
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: '14px', color: '#B87955' }}>
+                          {selectedObj.label}
+                        </div>
+                        {selectedObj.incidentDetails && (
+                          <div style={{ fontSize: '11.5px', color: '#242C2D', marginTop: '4px' }}>
+                            {selectedObj.incidentDetails}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '12px', color: '#A3AFAC', fontStyle: 'italic' }}>
+                        Click any illuminated boundary or area in the photograph to select it.
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '10px', borderTop: '1px solid #E5E0D5' }}>
+                  <button
+                    onClick={handleProceedToReport}
+                    disabled={!activeSelectedObjectId}
+                    className="btn btn-accent"
+                    style={{
+                      width: '100%',
+                      padding: '10px 16px',
+                      fontWeight: 700,
+                      opacity: activeSelectedObjectId ? 1 : 0.45,
+                      cursor: activeSelectedObjectId ? 'pointer' : 'not-allowed',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                    }}
+                  >
+                    <FileText size={15} />
+                    <span>File Incident Report</span>
+                    <ChevronRight size={15} />
+                  </button>
+
+                  <button
+                    onClick={() => setRoomStep('inspect_prompt')}
+                    className="btn btn-secondary btn-sm"
+                    style={{ width: '100%', justifyContent: 'center' }}
+                  >
+                    <span>Change Yes/No Answer</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* STEP C: Incident Reporting Form */}
+            {roomStep === 'file_report' && (
+              <div
+                className="animate-fade-in"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%',
+                  justifyContent: 'space-between',
+                  gap: '12px',
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    <span className="badge badge-copper">
+                      Step 3: Incident Report
+                    </span>
+                    <button
+                      onClick={() => setRoomStep('select_object')}
+                      className="btn btn-secondary btn-sm"
+                      style={{ fontSize: '11px', padding: '3px 8px' }}
+                    >
+                      Change Target
+                    </button>
+                  </div>
+
+                  <div style={{ fontWeight: 800, fontSize: '13.5px', color: '#173B3A', marginBottom: '10px' }}>
+                    Target: {selectedObj?.label}
+                  </div>
+
+                  <div style={{ marginBottom: '10px' }}>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '11.5px',
+                        fontWeight: 700,
+                        color: '#242C2D',
+                        marginBottom: '4px',
+                      }}
+                    >
+                      Incident Category
+                    </label>
+                    <select
+                      value={activeCategory}
+                      onChange={(e) => setActiveCategory(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '7px 10px',
+                        borderRadius: '6px',
+                        border: '1.5px solid #CBD5D1',
+                        fontSize: '12px',
+                        backgroundColor: '#FFFFFF',
+                        color: '#173B3A',
+                        fontWeight: 600,
+                      }}
+                    >
+                      <option value="physical-security">Physical Security & Access</option>
+                      <option value="information-security">Information Security & Clean Desk</option>
+                      <option value="safety">Occupational Safety & Walkways</option>
+                      <option value="egress">Life Safety & Egress</option>
+                      <option value="compliance">Regulatory Compliance / Equipment</option>
+                    </select>
+                  </div>
+
+                  <div style={{ marginBottom: '10px' }}>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '11.5px',
+                        fontWeight: 700,
+                        color: '#242C2D',
+                        marginBottom: '4px',
+                      }}
+                    >
+                      Severity Classification
+                    </label>
+                    <select
+                      value={activeSeverity}
+                      onChange={(e) =>
+                        setActiveSeverity(e.target.value as 'low' | 'medium' | 'high' | 'critical')
+                      }
+                      style={{
+                        width: '100%',
+                        padding: '7px 10px',
+                        borderRadius: '6px',
+                        border: '1.5px solid #CBD5D1',
+                        fontSize: '12px',
+                        backgroundColor: '#FFFFFF',
+                        color: '#173B3A',
+                        fontWeight: 600,
+                      }}
+                    >
+                      <option value="critical">Critical (Immediate breach)</option>
+                      <option value="high">High (Major violation)</option>
+                      <option value="medium">Medium (Hazard)</option>
+                      <option value="low">Low (Routine)</option>
+                    </select>
+                  </div>
+
+                  <div style={{ marginBottom: '8px' }}>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '11.5px',
+                        fontWeight: 700,
+                        color: '#242C2D',
+                        marginBottom: '4px',
+                      }}
+                    >
+                      Officer Observation Notes
+                    </label>
+                    <input
+                      type="text"
+                      value={activeDescription}
+                      onChange={(e) => setActiveDescription(e.target.value)}
+                      placeholder="Brief description of observed condition..."
+                      style={{
+                        width: '100%',
+                        padding: '7px 10px',
+                        borderRadius: '6px',
+                        border: '1.5px solid #CBD5D1',
+                        fontSize: '12px',
+                        backgroundColor: '#FAF8F3',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ paddingTop: '8px', borderTop: '1px solid #E5E0D5' }}>
+                  <button
+                    onClick={handleSubmitReport}
+                    className="btn btn-primary"
+                    style={{
+                      width: '100%',
+                      padding: '10px 16px',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                    }}
+                  >
+                    <CheckCircle2 size={15} />
+                    <span>Submit Incident Report</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* STEP D: Feedback & Resolution */}
+            {roomStep === 'feedback' && activeFeedback && (
+              <div
+                className="animate-fade-in"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%',
+                  justifyContent: 'space-between',
+                  gap: '12px',
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    {activeFeedback.isCorrect ? (
+                      <>
+                        <CheckCircle2 size={18} color="#387A5A" />
+                        <span style={{ fontWeight: 800, color: '#387A5A', fontSize: '14.5px' }}>
+                          {activeFeedback.title}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle size={18} color="#B44D45" />
+                        <span style={{ fontWeight: 800, color: '#B44D45', fontSize: '14.5px' }}>
+                          {activeFeedback.title}
+                        </span>
+                      </>
+                    )}
+                  </div>
+
+                  <p style={{ margin: '0 0 10px', fontSize: '12.5px', color: '#242C2D', lineHeight: 1.45 }}>
+                    {activeFeedback.message}
+                  </p>
+
+                  {activeFeedback.whyItMatters && (
+                    <div
+                      style={{
+                        backgroundColor: '#FAF8F3',
+                        borderLeft: '3px solid #B87955',
+                        padding: '8px 10px',
+                        borderRadius: '4px',
+                        fontSize: '11.5px',
+                        color: '#68716D',
+                        lineHeight: 1.45,
+                      }}
+                    >
+                      <strong style={{ color: '#173B3A' }}>Context: </strong>
+                      {activeFeedback.whyItMatters}
+                    </div>
                   )}
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ paddingTop: '8px', borderTop: '1px solid #E5E0D5' }}>
                   {!activeFeedback.isCorrect ? (
                     <button
                       onClick={handleRetryRoom}
-                      className="btn btn-secondary btn-sm"
-                      style={{ padding: '6px 14px', fontWeight: 700 }}
+                      className="btn btn-secondary"
+                      style={{
+                        width: '100%',
+                        padding: '10px 16px',
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                      }}
                     >
                       <RotateCcw size={14} />
                       <span>Re-inspect Zone</span>
@@ -1297,8 +1399,16 @@ export const BuildingInspectionActivity: React.FC<BuildingInspectionActivityProp
                   ) : (
                     <button
                       onClick={handleReturnToBuilding}
-                      className="btn btn-primary btn-sm"
-                      style={{ padding: '6px 16px', fontWeight: 700 }}
+                      className="btn btn-primary"
+                      style={{
+                        width: '100%',
+                        padding: '10px 16px',
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                      }}
                     >
                       <span>Return to Building Facade</span>
                       <ChevronRight size={14} />
@@ -1306,29 +1416,8 @@ export const BuildingInspectionActivity: React.FC<BuildingInspectionActivityProp
                   )}
                 </div>
               </div>
-
-              <p style={{ margin: '0 0 8px', fontSize: '13.5px', color: '#242C2D', lineHeight: 1.5 }}>
-                {activeFeedback.message}
-              </p>
-
-              {activeFeedback.whyItMatters && (
-                <div
-                  style={{
-                    backgroundColor: '#FAF8F3',
-                    borderLeft: '3px solid #B87955',
-                    padding: '8px 12px',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    color: '#68716D',
-                    lineHeight: 1.5,
-                  }}
-                >
-                  <strong style={{ color: '#173B3A' }}>Operational Context: </strong>
-                  {activeFeedback.whyItMatters}
-                </div>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     );

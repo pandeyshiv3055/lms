@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Award,
   CheckCircle2,
@@ -13,7 +14,11 @@ import {
 import { Slide, Assessment, QuizAttempt } from '../../../types';
 import { assessmentService } from '../../../services/assessment.service';
 import { authService } from '../../../services/auth.service';
+import { courseService } from '../../../services/course.service';
+import { badgeService } from '../../../services/badge.service';
 import { BadgeEmblem } from '../../../assets/illustrations/badges';
+import { CertificationResultView } from '../../certification/CertificationResultView';
+import { CertificateView } from '../../certification/CertificateView';
 
 interface QuizSlideRendererProps {
   slide: Slide;
@@ -26,8 +31,10 @@ export const QuizSlideRenderer: React.FC<QuizSlideRendererProps> = ({
   courseId,
   onInteractionComplete,
 }) => {
+  const navigate = useNavigate();
   const user = authService.getCurrentUser();
   const userId = user?.id || 'user-demo-learner';
+  const course = courseService.getCourseById(courseId);
 
   const assessment: Assessment | null =
     assessmentService.getAssessmentByCourseId(courseId) ||
@@ -37,6 +44,7 @@ export const QuizSlideRenderer: React.FC<QuizSlideRendererProps> = ({
   const [userAnswers, setUserAnswers] = useState<Record<string, string | string[]>>({});
   const [attemptResult, setAttemptResult] = useState<QuizAttempt | null>(null);
   const [isReviewMode, setIsReviewMode] = useState(false);
+  const [showCertModal, setShowCertModal] = useState(false);
 
   // Load existing attempts on mount
   useEffect(() => {
@@ -111,143 +119,39 @@ export const QuizSlideRenderer: React.FC<QuizSlideRendererProps> = ({
      EXAMINATION RESULTS & OUTCOME SCREEN
      ========================================================================== */
   if (attemptResult && !isReviewMode) {
-    const passed = attemptResult.passed;
-    const canRetry = existingAttempts.length < maxAttempts;
+    const isAlreadyEarned = badgeService.hasBadge(userId, 'badge-course-completion');
 
     return (
-      <div
-        style={{
-          padding: '36px 40px',
-          maxWidth: '740px',
-          margin: '0 auto',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-        }}
-        className="animate-fade-in"
-      >
-        <div
-          style={{
-            width: '80px',
-            height: '80px',
-            borderRadius: '50%',
-            backgroundColor: passed ? '#EAF3EE' : '#FAEEEC',
-            border: `3px solid ${passed ? '#387A5A' : '#B44D45'}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '20px',
+      <>
+        <CertificationResultView
+          attempt={attemptResult}
+          assessment={assessment}
+          courseTitle={course?.title || 'The Nature and Role of Private Security'}
+          courseCode={course?.code || 'SEC-101'}
+          learnerName={user?.name || 'Officer'}
+          onReviewAnswers={() => setIsReviewMode(true)}
+          onRetry={handleRetry}
+          canRetry={existingAttempts.length < maxAttempts}
+          attemptsRemaining={Math.max(0, maxAttempts - existingAttempts.length)}
+          isAlreadyEarned={isAlreadyEarned}
+          onAdvanceToNext={() => {
+            if (onInteractionComplete) onInteractionComplete();
           }}
-        >
-          {passed ? (
-            <ShieldCheck size={44} color="#387A5A" />
-          ) : (
-            <AlertCircle size={44} color="#B44D45" />
-          )}
-        </div>
-
-        <span
-          className={`badge ${passed ? 'badge-success' : 'badge-error'}`}
-          style={{ marginBottom: '10px' }}
-        >
-          {passed ? 'CERTIFICATION PASS' : 'DID NOT MEET THRESHOLD'}
-        </span>
-
-        <h2 style={{ fontSize: '28px', color: '#173B3A', marginBottom: '8px' }}>
-          {passed ? 'Congratulations, Officer!' : 'Assessment Incomplete'}
-        </h2>
-
-        <p style={{ color: '#68716D', fontSize: '15px', lineHeight: 1.6, maxWidth: '600px', marginBottom: '24px' }}>
-          {attemptResult.feedbackSummary}
-        </p>
-
-        {/* Score & Badge Showcase */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '24px',
-            backgroundColor: '#FAF8F3',
-            border: '1.5px solid #E5E0D5',
-            borderRadius: '12px',
-            padding: '20px 32px',
-            width: '100%',
-            maxWidth: '520px',
-            marginBottom: '28px',
+          onViewCertification={() => {
+            if (onInteractionComplete) onInteractionComplete();
+            navigate('/learner/progress');
           }}
-        >
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '36px', fontWeight: 800, color: passed ? '#387A5A' : '#B44D45' }}>
-              {attemptResult.scorePercentage}%
-            </div>
-            <div style={{ fontSize: '12px', color: '#68716D', textTransform: 'uppercase', fontWeight: 600 }}>
-              Your Score
-            </div>
-          </div>
+          onOpenCertificateModal={() => setShowCertModal(true)}
+        />
 
-          <div style={{ width: '1px', height: '48px', backgroundColor: '#E5E0D5' }} />
-
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '36px', fontWeight: 800, color: '#173B3A' }}>
-              {assessment.passingScore}%
-            </div>
-            <div style={{ fontSize: '12px', color: '#68716D', textTransform: 'uppercase', fontWeight: 600 }}>
-              Required Pass Mark
-            </div>
-          </div>
-
-          {passed && (
-            <>
-              <div style={{ width: '1px', height: '48px', backgroundColor: '#E5E0D5' }} />
-              <div style={{ textAlign: 'center' }}>
-                <BadgeEmblem id="badge-course-completion" size={54} />
-                <div style={{ fontSize: '10px', color: '#D49B65', fontWeight: 700, marginTop: '4px' }}>
-                  AWARD UNLOCKED
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          {assessment.reviewAllowed && (
-            <button
-              onClick={() => setIsReviewMode(true)}
-              className="btn btn-secondary"
-            >
-              <HelpCircle size={16} />
-              <span>Review Exam Answers</span>
-            </button>
-          )}
-
-          {!passed && canRetry && (
-            <button
-              onClick={handleRetry}
-              className="btn btn-accent"
-            >
-              <RotateCcw size={16} />
-              <span>Retry Assessment ({maxAttempts - existingAttempts.length} left)</span>
-            </button>
-          )}
-
-          {passed && (
-            <button
-              onClick={() => {
-                if (onInteractionComplete) onInteractionComplete();
-              }}
-              className="btn btn-primary"
-            >
-              <span>Advance to Final Certification</span>
-              <ChevronRight size={16} />
-            </button>
-          )}
-        </div>
-      </div>
+        {showCertModal && (
+          <CertificateView
+            isModal={true}
+            courseIdProp={courseId}
+            onClose={() => setShowCertModal(false)}
+          />
+        )}
+      </>
     );
   }
 
@@ -303,8 +207,8 @@ export const QuizSlideRenderer: React.FC<QuizSlideRendererProps> = ({
                   backgroundColor: isCurr
                     ? '#B87955'
                     : hasAns
-                    ? '#387A5A'
-                    : '#E5E0D5',
+                      ? '#387A5A'
+                      : '#E5E0D5',
                   transition: 'background-color 0.2s ease',
                   border: 'none',
                   cursor: 'pointer',

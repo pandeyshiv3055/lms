@@ -27,6 +27,7 @@ const STORAGE_KEYS = {
   SETTINGS: 'aegis_lms_v1_settings',
   SESSION: 'aegis_lms_v1_session',
   PROGRESS: 'aegis_lms_v1_progress',
+  INTERACTIVE_MODULES: 'aegis_lms_v1_interactive_modules',
 };
 
 class StorageService {
@@ -59,13 +60,21 @@ class StorageService {
       this.safeSet(STORAGE_KEYS.COURSES, seedCourses);
     }
     const storedScenarios = this.safeGet<BuildingScenario[]>(STORAGE_KEYS.SCENARIOS, []);
-    const scenariosOutdated =
+    const fac04 = storedScenarios.find((s) => s.id === 'scenario-facility-04');
+    const isFac04Outdated =
       !storedScenarios.length ||
-      !storedScenarios[0]?.rooms[0]?.objects ||
-      storedScenarios[0]?.buildingImage === 'building-facade';
+      !fac04 ||
+      !fac04.rooms?.[0]?.objects ||
+      fac04.buildingImage === 'building-facade' ||
+      fac04.rooms.some(
+        (r) =>
+          r.id === 'room-server' &&
+          r.objects?.some((o) => o.id === 'obj-server-open-rack' && (o.hotspot.width || 0) > 20)
+      );
 
-    if (scenariosOutdated) {
-      this.safeSet(STORAGE_KEYS.SCENARIOS, [seedBuildingScenario]);
+    if (isFac04Outdated) {
+      const filtered = storedScenarios.filter((s) => s.id !== 'scenario-facility-04');
+      this.safeSet(STORAGE_KEYS.SCENARIOS, [seedBuildingScenario, ...filtered]);
     }
     if (!localStorage.getItem(STORAGE_KEYS.ASSESSMENTS)) {
       this.safeSet(STORAGE_KEYS.ASSESSMENTS, seedAssessments);
@@ -120,6 +129,7 @@ class StorageService {
     localStorage.removeItem(STORAGE_KEYS.MEDIA);
     localStorage.removeItem(STORAGE_KEYS.SETTINGS);
     localStorage.removeItem(STORAGE_KEYS.PROGRESS);
+    localStorage.removeItem(STORAGE_KEYS.INTERACTIVE_MODULES);
     // Keep session or default to learner session
     this.initialize();
   }
@@ -198,6 +208,14 @@ class StorageService {
     } else {
       this.safeSet(STORAGE_KEYS.SESSION, session);
     }
+  }
+
+  // Interactive Modules
+  public getInteractiveModules(): Record<string, any> {
+    return this.safeGet<Record<string, any>>(STORAGE_KEYS.INTERACTIVE_MODULES, {});
+  }
+  public saveInteractiveModules(modules: Record<string, any>): void {
+    this.safeSet(STORAGE_KEYS.INTERACTIVE_MODULES, modules);
   }
 }
 

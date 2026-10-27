@@ -12,6 +12,7 @@ import { CourseDetails } from './features/learner/CourseDetails';
 import { CoursePlayer } from './features/player/CoursePlayer';
 import { ProgressPage } from './features/progress/ProgressPage';
 import { Profile } from './features/learner/Profile';
+import { CertificateView } from './features/certification/CertificateView';
 
 // Admin Views
 import { AdminDashboard } from './features/admin/Dashboard';
@@ -90,6 +91,7 @@ export default function App() {
           <Route path="courses" element={<CourseCatalogue />} />
           <Route path="courses/:courseId" element={<CourseDetails />} />
           <Route path="progress" element={<ProgressPage />} />
+          <Route path="certificate/:courseId" element={<CertificateView />} />
           <Route path="profile" element={<Profile />} />
         </Route>
 
